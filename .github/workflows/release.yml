@@ -1,0 +1,37 @@
+name: Automated Release with Semantic-Release
+
+on:
+  push:
+    branches:
+      - main # Or 'master', 'production', etc. - the branch you release from
+
+jobs:
+  release:
+    name: Create Semantic Release
+    runs-on: ubuntu-latest # Or 'windows-latest', 'macos-latest' if needed
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          # This is crucial for semantic-release. It needs the full commit history
+          # to analyze all commits since the last release.
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18' # Use a stable Node.js version compatible with your project
+          cache: 'npm' # Caches npm dependencies to speed up builds
+
+      - name: Install dependencies
+        run: npm ci # 'npm ci' is preferred over 'npm install' in CI environments for consistent installs
+
+      - name: Run semantic-release
+        env:
+          # GITHUB_TOKEN is a special token provided by GitHub Actions.
+          # It has permissions to create releases, tags, and commit back to the repo.
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # If you're publishing to npm, you'd also need NPM_TOKEN here:
+          # NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npx semantic-release
