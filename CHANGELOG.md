@@ -1,3 +1,10 @@
+## [1.1.1](https://github.com/sagartrivedi11/versioning/compare/v1.1.0...v1.1.1) (2025-08-12)
+
+
+### Bug Fixes
+
+* bug fix in logging ([29bf57a](https://github.com/sagartrivedi11/versioning/commit/29bf57a6f538cc3d5e16722675adf876bb0a1bc0))
+
 # [1.1.0](https://github.com/sagartrivedi11/versioning/compare/v1.0.0...v1.1.0) (2025-08-12)
 
 
