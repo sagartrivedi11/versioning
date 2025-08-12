@@ -1,3 +1,10 @@
+# [1.1.0](https://github.com/sagartrivedi11/versioning/compare/v1.0.0...v1.1.0) (2025-08-12)
+
+
+### Features
+
+* added new powershell to handle logging ([f42423a](https://github.com/sagartrivedi11/versioning/commit/f42423a6caab30d88e000bcd36372a439c984d50))
+
 # 1.0.0 (2025-08-12)
 
 
