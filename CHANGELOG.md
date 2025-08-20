@@ -1,3 +1,10 @@
+# [1.2.0](https://github.com/sagartrivedi11/versioning/compare/v1.1.1...v1.2.0) (2025-08-20)
+
+
+### Features
+
+* new registration page added and payment gateway changed ([cf3de7f](https://github.com/sagartrivedi11/versioning/commit/cf3de7fcaee1428752d8beecf9b8faeeadd50d8e))
+
 ## [1.1.1](https://github.com/sagartrivedi11/versioning/compare/v1.1.0...v1.1.1) (2025-08-12)
 
 
