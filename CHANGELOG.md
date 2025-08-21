@@ -1,3 +1,15 @@
+# [2.0.0](https://github.com/sagartrivedi11/versioning/compare/v1.3.1...v2.0.0) (2025-08-21)
+
+
+### Features
+
+* **api:** introduce a new breaking change ([6c19639](https://github.com/sagartrivedi11/versioning/commit/6c19639e136e69d686a0f913247a866761c61368))
+
+
+### BREAKING CHANGES
+
+* **api:** The previous API endpoint /api/v1/data is now removed.
+
 ## [1.3.1](https://github.com/sagartrivedi11/versioning/compare/v1.3.0...v1.3.1) (2025-08-21)
 
 
