@@ -1,3 +1,10 @@
+## [1.3.1](https://github.com/sagartrivedi11/versioning/compare/v1.3.0...v1.3.1) (2025-08-21)
+
+
+### Bug Fixes
+
+* fixed minor bug and typo changes ([ab0a91f](https://github.com/sagartrivedi11/versioning/commit/ab0a91fb888d3370919b53389eb19005bad10d2d))
+
 # [1.3.0](https://github.com/sagartrivedi11/versioning/compare/v1.2.1...v1.3.0) (2025-08-21)
 
 
