@@ -1,3 +1,10 @@
+# [1.3.0](https://github.com/sagartrivedi11/versioning/compare/v1.2.1...v1.3.0) (2025-08-21)
+
+
+### Features
+
+* added new feature for payment gateway and product page changes ([3a2c00e](https://github.com/sagartrivedi11/versioning/commit/3a2c00e23b1e865e917fc0162a5d28f6903f1650))
+
 # [1.2.0](https://github.com/sagartrivedi11/versioning/compare/v1.1.1...v1.2.0) (2025-08-20)
 
 
