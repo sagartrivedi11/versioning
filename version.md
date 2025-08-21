@@ -1,4 +1,4 @@
-# Commit Message Guidelines (Short & Crisp)
+# Commit Message Guidelines
 
 Use these commit message formats to trigger automated releases with `semantic-release`.
 
