@@ -1,3 +1,15 @@
+# [3.0.0](https://github.com/sagartrivedi11/versioning/compare/v2.0.0...v3.0.0) (2025-08-21)
+
+
+### Features
+
+* added new feature for user authentication ([67166c4](https://github.com/sagartrivedi11/versioning/commit/67166c448d0a42721c0a853fccd86f1cc7ba39b9))
+
+
+### BREAKING CHANGES
+
+* updated authentication flow
+
 # [2.0.0](https://github.com/sagartrivedi11/versioning/compare/v1.3.1...v2.0.0) (2025-08-21)
 
 
