@@ -1,3 +1,10 @@
+## [1.2.1](https://github.com/sagartrivedi11/versioning/compare/v1.2.0...v1.2.1) (2025-08-21)
+
+
+### Bug Fixes
+
+* typo ([2cf4deb](https://github.com/sagartrivedi11/versioning/commit/2cf4debfcd53d778a5338dcc0a2cb21e900a9a44))
+
 # [1.2.0](https://github.com/sagartrivedi11/versioning/compare/v1.1.1...v1.2.0) (2025-08-20)
 
 
