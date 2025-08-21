@@ -4,3 +4,7 @@ messages:
       Write Powershell script to download the latest chrome exe using google
       api.
 model: openai/gpt-4o
+testData: []
+evaluators:
+  - name: Relevance
+    uses: github/relevance
