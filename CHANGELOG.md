@@ -1,3 +1,10 @@
+# [4.5.0](https://github.com/sagartrivedi11/versioning/compare/v4.4.0...v4.5.0) (2025-09-02)
+
+
+### Features
+
+* **release:** enhance semantic-release step with improved output handling and debugging ([81c51af](https://github.com/sagartrivedi11/versioning/commit/81c51afd92a6a984d956cf6d61e4e8e2fb289793))
+
 # [4.4.0](https://github.com/sagartrivedi11/versioning/compare/v4.3.0...v4.4.0) (2025-09-02)
 
 
