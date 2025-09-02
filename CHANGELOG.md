@@ -1,3 +1,10 @@
+# [4.2.0](https://github.com/sagartrivedi11/versioning/compare/v4.1.0...v4.2.0) (2025-09-02)
+
+
+### Features
+
+* **release:** add step to create and push release branch after semantic-release ([c7f07f8](https://github.com/sagartrivedi11/versioning/commit/c7f07f8d2bf0846be46e770c2c64fbbebb9ac8db))
+
 # [4.1.0](https://github.com/sagartrivedi11/versioning/compare/v4.0.0...v4.1.0) (2025-08-21)
 
 
