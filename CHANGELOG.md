@@ -1,3 +1,10 @@
+# [4.1.0](https://github.com/sagartrivedi11/versioning/compare/v4.0.0...v4.1.0) (2025-08-21)
+
+
+### Features
+
+* remove old authentication method ([4d0d32b](https://github.com/sagartrivedi11/versioning/commit/4d0d32b650b853b52d5d864247241e1f4f79c86c))
+
 # [4.0.0](https://github.com/sagartrivedi11/versioning/compare/v3.0.0...v4.0.0) (2025-08-21)
 
 
