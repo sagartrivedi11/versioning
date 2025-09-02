@@ -1,9 +1,10 @@
+# .github/workflows/release.yml
 name: Automated Release with Semantic-Release
 
 on:
   push:
     branches:
-      - main
+      - main # The branch you release from
 
 jobs:
   release:
@@ -11,18 +12,18 @@ jobs:
     runs-on: ubuntu-latest
 
     permissions:
-      contents: write
+      contents: write # Ensure write permissions for creating tags, releases, and pushing branches
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 0 # CRUCIAL: Fetch all history for semantic-release
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '18' # Use a stable Node.js version
           cache: 'npm'
 
       - name: Install dependencies
@@ -33,35 +34,56 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # Run semantic-release, capturing only stdout (where JSON is expected)
-          # Redirect stderr (file descriptor 2) to /dev/null to avoid mixing logs with JSON.
-          # If semantic-release doesn't publish, it might output 'null' or nothing to stdout.
-          RELEASE_INFO=$(npx semantic-release --json 2>/dev/null)
+          echo "--- Starting semantic-release execution ---"
 
-          # Print the full JSON output for debugging (optional, but good for now)
-          echo "Semantic-release JSON Output (captured):"
-          echo "$RELEASE_INFO"
+          # Create a temporary file to store all output from semantic-release
+          TEMP_OUTPUT_FILE=$(mktemp)
 
-          # Check if RELEASE_INFO is empty or not valid JSON
-          # If it's empty or invalid, set new_release_version to an empty string.
-          if [ -z "$RELEASE_INFO" ] || ! echo "$RELEASE_INFO" | jq . > /dev/null 2>&1; then
-            echo "::warning::semantic-release did not output valid JSON or no release was published."
-            echo "new_release_version=" >> $GITHUB_OUTPUT # Set output to empty string
-          else
-            # Extract the new version number using jq.
-            # Use // empty to handle cases where .nextRelease.version might be null (e.g., if no release happened).
+          # Run semantic-release, capturing ALL output (stdout and stderr) to the temporary file
+          # We'll parse the JSON from this file later.
+          npx semantic-release --json > "$TEMP_OUTPUT_FILE" 2>&1
+          SEMANTIC_RELEASE_EXIT_CODE=$?
+
+          echo "--- Debugging semantic-release Output ---"
+          echo "Full raw output from semantic-release (from temp file):"
+          cat "$TEMP_OUTPUT_FILE" # Print the full content of the temp file for debugging
+          echo "Semantic-release Exit Code: $SEMANTIC_RELEASE_EXIT_CODE"
+
+          # Extract the JSON line from the temporary file.
+          # We look for a line that starts with '{' and ends with '}'.
+          # semantic-release's --json output is typically a single line JSON object or 'null'.
+          # Using head -n 1 to ensure we only get the first (and hopefully only) JSON object.
+          RELEASE_INFO=$(grep -E '^{.*}$' "$TEMP_OUTPUT_FILE" | head -n 1)
+
+          # Clean up the temporary file
+          rm "$TEMP_OUTPUT_FILE"
+
+          NEW_VERSION="" # Initialize NEW_VERSION
+
+          # Check if RELEASE_INFO is non-empty AND valid JSON
+          if [ -n "$RELEASE_INFO" ] && echo "$RELEASE_INFO" | jq . > /dev/null 2>&1; then
+            # Attempt to extract version, handle cases where .nextRelease.version might be null or missing
             NEW_VERSION=$(echo "$RELEASE_INFO" | jq -r '.nextRelease.version // empty')
-
-            # Set the new_release_version as a step output for GitHub Actions.
-            # This makes it available via steps.semantic_release_step.outputs.new_release_version
-            echo "new_release_version=$NEW_VERSION" >> $GITHUB_OUTPUT
+            echo "Parsed NEW_VERSION: '$NEW_VERSION'"
+          else
+            echo "Semantic-release did not produce a valid JSON release object."
+            echo "  - Is RELEASE_INFO empty? [$( [ -z "$RELEASE_INFO" ] && echo "YES" || echo "NO" )]"
+            echo "  - Is RELEASE_INFO valid JSON? [$( echo "$RELEASE_INFO" | jq . > /dev/null 2>&1 && echo "YES" || echo "NO" )]"
           fi
+
+          echo "--- End Debugging ---"
+
+          # Set the new_release_version as a step output for GitHub Actions
+          echo "new_release_version=$NEW_VERSION" >> $GITHUB_OUTPUT
+          echo "Set GitHub Actions output 'new_release_version' to: '$NEW_VERSION'"
+
 
       - name: Create Release Branch
         # This step will now correctly receive the new_release_version output
         # and will only run if new_release_version is not empty.
         if: steps.semantic_release_step.outputs.new_release_version
         run: |
+          echo "--- Starting Create Release Branch step ---"
           # Get the new version number from semantic-release's output
           VERSION="${{ steps.semantic_release_step.outputs.new_release_version }}"
           RELEASE_BRANCH="release/v${VERSION}"
@@ -79,5 +101,6 @@ jobs:
 
           # Push the new branch to the remote repository
           git push origin $RELEASE_BRANCH
+          echo "--- Finished Create Release Branch step ---"
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Ensure token is available for git push
