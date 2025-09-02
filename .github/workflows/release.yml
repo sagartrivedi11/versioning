@@ -33,24 +33,33 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # Run semantic-release and capture its JSON output
-          # --json flag ensures structured output for easier parsing
-          RELEASE_INFO=$(npx semantic-release --json)
+          # Run semantic-release, capturing only stdout (where JSON is expected)
+          # Redirect stderr (file descriptor 2) to /dev/null to avoid mixing logs with JSON.
+          # If semantic-release doesn't publish, it might output 'null' or nothing to stdout.
+          RELEASE_INFO=$(npx semantic-release --json 2>/dev/null)
 
-          # Print the full JSON output for debugging purposes (optional)
-          echo "Semantic-release JSON Output:"
+          # Print the full JSON output for debugging (optional, but good for now)
+          echo "Semantic-release JSON Output (captured):"
           echo "$RELEASE_INFO"
 
-          # Extract the new version number using jq
-          # .nextRelease.version is the path to the version in the JSON output
-          NEW_VERSION=$(echo "$RELEASE_INFO" | jq -r '.nextRelease.version')
+          # Check if RELEASE_INFO is empty or not valid JSON
+          # If it's empty or invalid, set new_release_version to an empty string.
+          if [ -z "$RELEASE_INFO" ] || ! echo "$RELEASE_INFO" | jq . > /dev/null 2>&1; then
+            echo "::warning::semantic-release did not output valid JSON or no release was published."
+            echo "new_release_version=" >> $GITHUB_OUTPUT # Set output to empty string
+          else
+            # Extract the new version number using jq.
+            # Use // empty to handle cases where .nextRelease.version might be null (e.g., if no release happened).
+            NEW_VERSION=$(echo "$RELEASE_INFO" | jq -r '.nextRelease.version // empty')
 
-          # Set the new_release_version as a step output for GitHub Actions
-          # This makes it available via steps.semantic_release_step.outputs.new_release_version
-          echo "new_release_version=$NEW_VERSION" >> $GITHUB_OUTPUT
+            # Set the new_release_version as a step output for GitHub Actions.
+            # This makes it available via steps.semantic_release_step.outputs.new_release_version
+            echo "new_release_version=$NEW_VERSION" >> $GITHUB_OUTPUT
+          fi
 
       - name: Create Release Branch
         # This step will now correctly receive the new_release_version output
+        # and will only run if new_release_version is not empty.
         if: steps.semantic_release_step.outputs.new_release_version
         run: |
           # Get the new version number from semantic-release's output
