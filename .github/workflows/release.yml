@@ -29,12 +29,28 @@ jobs:
         run: npm ci
 
       - name: Run semantic-release
-        id: semantic_release_step
+        id: semantic_release_step # Keep this ID
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: npx semantic-release
+        run: |
+          # Run semantic-release and capture its JSON output
+          # --json flag ensures structured output for easier parsing
+          RELEASE_INFO=$(npx semantic-release --json)
+
+          # Print the full JSON output for debugging purposes (optional)
+          echo "Semantic-release JSON Output:"
+          echo "$RELEASE_INFO"
+
+          # Extract the new version number using jq
+          # .nextRelease.version is the path to the version in the JSON output
+          NEW_VERSION=$(echo "$RELEASE_INFO" | jq -r '.nextRelease.version')
+
+          # Set the new_release_version as a step output for GitHub Actions
+          # This makes it available via steps.semantic_release_step.outputs.new_release_version
+          echo "new_release_version=$NEW_VERSION" >> $GITHUB_OUTPUT
 
       - name: Create Release Branch
+        # This step will now correctly receive the new_release_version output
         if: steps.semantic_release_step.outputs.new_release_version
         run: |
           # Get the new version number from semantic-release's output
@@ -47,11 +63,9 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
           # Fetch all tags to ensure the newly created tag is available locally
-          # (semantic-release pushes the tag, but the runner's local clone might not have it instantly)
           git fetch --tags
 
           # Create the new branch from the tag semantic-release just created
-          # The tag name will be 'vX.Y.Z'
           git branch $RELEASE_BRANCH "v${VERSION}"
 
           # Push the new branch to the remote repository
