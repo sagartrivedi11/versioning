@@ -1,3 +1,10 @@
+# [4.6.0](https://github.com/sagartrivedi11/versioning/compare/v4.5.0...v4.6.0) (2025-09-02)
+
+
+### Features
+
+* **release:** improve JSON output handling in semantic-release step ([dc40178](https://github.com/sagartrivedi11/versioning/commit/dc40178ba434c8606a53b958906f316f15cb2bed))
+
 # [4.5.0](https://github.com/sagartrivedi11/versioning/compare/v4.4.0...v4.5.0) (2025-09-02)
 
 
