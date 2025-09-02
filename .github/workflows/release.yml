@@ -40,7 +40,6 @@ jobs:
           TEMP_OUTPUT_FILE=$(mktemp)
 
           # Run semantic-release, capturing ALL output (stdout and stderr) to the temporary file
-          # We'll parse the JSON from this file later.
           npx semantic-release --json > "$TEMP_OUTPUT_FILE" 2>&1
           SEMANTIC_RELEASE_EXIT_CODE=$?
 
@@ -49,26 +48,33 @@ jobs:
           cat "$TEMP_OUTPUT_FILE" # Print the full content of the temp file for debugging
           echo "Semantic-release Exit Code: $SEMANTIC_RELEASE_EXIT_CODE"
 
-          # Extract the JSON line from the temporary file.
-          # We look for a line that starts with '{' and ends with '}'.
-          # semantic-release's --json output is typically a single line JSON object or 'null'.
-          # Using head -n 1 to ensure we only get the first (and hopefully only) JSON object.
-          RELEASE_INFO=$(grep -E '^{.*}$' "$TEMP_OUTPUT_FILE" | head -n 1)
+          # Extract the last non-empty line from the temporary file.
+          # This is where semantic-release's JSON output (or 'null') should be.
+          # 'xargs' is used to strip leading/trailing whitespace.
+          RAW_JSON_LINE=$(grep -vE '^\s*$' "$TEMP_OUTPUT_FILE" | tail -n 1 | xargs)
 
           # Clean up the temporary file
           rm "$TEMP_OUTPUT_FILE"
 
+          echo "Raw JSON line extracted for parsing: '$RAW_JSON_LINE'"
+
           NEW_VERSION="" # Initialize NEW_VERSION
 
-          # Check if RELEASE_INFO is non-empty AND valid JSON
-          if [ -n "$RELEASE_INFO" ] && echo "$RELEASE_INFO" | jq . > /dev/null 2>&1; then
-            # Attempt to extract version, handle cases where .nextRelease.version might be null or missing
-            NEW_VERSION=$(echo "$RELEASE_INFO" | jq -r '.nextRelease.version // empty')
-            echo "Parsed NEW_VERSION: '$NEW_VERSION'"
+          # Check if RAW_JSON_LINE is non-empty AND valid JSON (either an object or 'null')
+          if [ -n "$RAW_JSON_LINE" ] && (echo "$RAW_JSON_LINE" | jq . > /dev/null 2>&1 || [ "$RAW_JSON_LINE" = "null" ]); then
+            # If it's 'null', it means no release was published.
+            if [ "$RAW_JSON_LINE" = "null" ]; then
+              echo "semantic-release indicated no new release (output was 'null')."
+              NEW_VERSION="" # Explicitly keep NEW_VERSION empty
+            else
+              # It's a JSON object, try to extract the version.
+              NEW_VERSION=$(echo "$RAW_JSON_LINE" | jq -r '.nextRelease.version // empty')
+              echo "Parsed NEW_VERSION: '$NEW_VERSION'"
+            fi
           else
-            echo "Semantic-release did not produce a valid JSON release object."
-            echo "  - Is RELEASE_INFO empty? [$( [ -z "$RELEASE_INFO" ] && echo "YES" || echo "NO" )]"
-            echo "  - Is RELEASE_INFO valid JSON? [$( echo "$RELEASE_INFO" | jq . > /dev/null 2>&1 && echo "YES" || echo "NO" )]"
+            echo "Semantic-release did not produce a valid JSON release object on the last relevant line."
+            echo "  - Is RAW_JSON_LINE empty? [$( [ -z "$RAW_JSON_LINE" ] && echo "YES" || echo "NO" )]"
+            echo "  - Is RAW_JSON_LINE valid JSON? [$( echo "$RAW_JSON_LINE" | jq . > /dev/null 2>&1 && echo "YES" || echo "NO" )]"
           fi
 
           echo "--- End Debugging ---"
