@@ -1,3 +1,10 @@
+# [4.3.0](https://github.com/sagartrivedi11/versioning/compare/v4.2.0...v4.3.0) (2025-09-02)
+
+
+### Features
+
+* **release:** enhance semantic-release step to capture and output new version ([b4310a2](https://github.com/sagartrivedi11/versioning/commit/b4310a2fc16a70e0a0e4672f21c439173c6b0ee5))
+
 # [4.2.0](https://github.com/sagartrivedi11/versioning/compare/v4.1.0...v4.2.0) (2025-09-02)
 
 
